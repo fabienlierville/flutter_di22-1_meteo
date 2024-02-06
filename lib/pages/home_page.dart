@@ -134,6 +134,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> ajoutVille() {
     City? villeSaisie;
 
+
     return showDialog(
         context: context,
         builder: (BuildContext contextDialog) {
@@ -153,7 +154,6 @@ class _HomePageState extends State<HomePage> {
                   },
                   suggestionsCallback: (pattern) async{
                     if(pattern.isNotEmpty){
-                      print("=============== $pattern ===============");
                       return await GeocoderService.searchCity(pattern);
                     }else{
                       return [];
