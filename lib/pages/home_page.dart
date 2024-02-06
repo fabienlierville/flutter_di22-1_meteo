@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               ),
               ListTile(
                 onTap: null,
-                title: Text("Position Inconnue", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+                title: Text(DeviceInfo.ville ?? "Position Inconnue", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
               ),
               Expanded(
                   child: ListView.builder(
