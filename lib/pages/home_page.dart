@@ -18,26 +18,42 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Météo"),),
+      appBar: AppBar(
+        title: Text("Météo"),
+      ),
       body: Column(
         children: [],
       ),
     );
   }
 
-  Future<void> getVilles() async{
+  Future<void> getVilles() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? jsonVille = prefs.getString("villes");
-    if(jsonVille != null){
+    if (jsonVille != null) {
       List<dynamic> jsonList = jsonDecode(jsonVille);
-      List<City> listeVille = jsonList.map((json) => City.fromJson(json)).toList();
+      List<City> listeVille =
+          jsonList.map((json) => City.fromJson(json)).toList();
       setState(() {
         villes = listeVille;
       });
     }
-
-
   }
 
+  Future<void> ajouter(String nom, double latitude, double longitude) async {
+    bool villeExistante = villes.any((city) => city.name == nom);
+    if (villeExistante) {
+      return;
+    }
 
+    City nouvelleVille =
+        City(name: nom, latitude: latitude, longitude: longitude);
+    villes.add(nouvelleVille);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<Map<String, dynamic>> jsonList =
+        villes.map((city) => city.toJson()).toList();
+    await prefs.setString("villes", jsonEncode(jsonList));
+    await getVilles(); // Récupère + refresh VUE
+  }
 }
