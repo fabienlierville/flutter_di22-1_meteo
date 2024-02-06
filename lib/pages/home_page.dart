@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:meteo/models/city.dart';
 import 'package:meteo/models/device_info.dart';
+import 'package:meteo/services/geocoder_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -130,7 +132,7 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<void> ajoutVille() {
-    String? villeSaisie;
+    City? villeSaisie;
 
     return showDialog(
         context: context,
@@ -139,18 +141,41 @@ class _HomePageState extends State<HomePage> {
             contentPadding: EdgeInsets.all(20),
             title: Text("Ajoutez une ville"),
             children: [
-              TextField(
-                decoration: InputDecoration(
-                    labelText: "ville", hintText: "saisir ville"),
-                onChanged: (String value) {
-                  villeSaisie = value;
+              TypeAheadField<City>(
+                  itemBuilder: (context, citySuggestion){
+                    return ListTile(
+                      title: Text(citySuggestion.display_name ?? "No Suggestion"),
+                    );
+                  },
+                  onSelected: (citySelected){
+                    villeSaisie = citySelected;
+                    print(villeSaisie.toString());
+                  },
+                  suggestionsCallback: (pattern) async{
+                    if(pattern.isNotEmpty){
+                      print("=============== $pattern ===============");
+                      return await GeocoderService.searchCity(pattern);
+                    }else{
+                      return [];
+                    }
+                  },
+                builder: (context, controller, focusNode) {
+                  return TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Saisir une ville',
+                      )
+                  );
                 },
               ),
               ElevatedButton(
                   onPressed: () {
                     if(villeSaisie != null){
 
-                      ajouter(villeSaisie!,-100,100);
+                      ajouter(villeSaisie!.name,villeSaisie!.latitude,villeSaisie!.longitude);
                       Navigator.pop(contextDialog);
                     }
                   },
