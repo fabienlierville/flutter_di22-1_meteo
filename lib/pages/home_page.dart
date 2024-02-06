@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:meteo/models/city.dart';
+import 'package:meteo/models/device_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +17,14 @@ class _HomePageState extends State<HomePage> {
   City? villeChoisie;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("${DeviceInfo.latitude},${DeviceInfo.longitude}");
+    getVilles();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -24,13 +33,12 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           FilledButton(
-              onPressed: () async{
+              onPressed: () async {
                 print(villes);
                 await supprimer("Rouen");
                 print(villes);
               },
-              child: Text("Ajouter une ville")
-          )
+              child: Text("Ajouter une ville"))
         ],
       ),
     );
@@ -66,20 +74,16 @@ class _HomePageState extends State<HomePage> {
     await getVilles(); // Récupère + refresh VUE
   }
 
-  Future<void> supprimer(String nom) async{
+  Future<void> supprimer(String nom) async {
     // [ {"name":"Rouen"}, {},{}]
     int indexVille = villes.indexWhere((city) => city.name == nom);
-    if(indexVille != -1){
+    if (indexVille != -1) {
       villes.removeAt(indexVille);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<Map<String, dynamic>> jsonList =
-      villes.map((city) => city.toJson()).toList();
+          villes.map((city) => city.toJson()).toList();
       await prefs.setString("villes", jsonEncode(jsonList));
       await getVilles(); // Récupère + refresh VUE
     }
-
   }
-
-
-
 }
