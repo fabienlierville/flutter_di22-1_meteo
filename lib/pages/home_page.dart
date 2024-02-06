@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
           FilledButton(
               onPressed: () async{
                 print(villes);
-                await ajouter("Lyon", -100, 100);
+                await supprimer("Rouen");
                 print(villes);
               },
               child: Text("Ajouter une ville")
@@ -65,4 +65,21 @@ class _HomePageState extends State<HomePage> {
     await prefs.setString("villes", jsonEncode(jsonList));
     await getVilles(); // Récupère + refresh VUE
   }
+
+  Future<void> supprimer(String nom) async{
+    // [ {"name":"Rouen"}, {},{}]
+    int indexVille = villes.indexWhere((city) => city.name == nom);
+    if(indexVille != -1){
+      villes.removeAt(indexVille);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<Map<String, dynamic>> jsonList =
+      villes.map((city) => city.toJson()).toList();
+      await prefs.setString("villes", jsonEncode(jsonList));
+      await getVilles(); // Récupère + refresh VUE
+    }
+
+  }
+
+
+
 }
