@@ -27,5 +27,8 @@ class City{
     );
   }
 
-
+  @override
+  String toString() {
+    return 'City{name: $name, latitude: $latitude, longitude: $longitude}';
+  }
 }

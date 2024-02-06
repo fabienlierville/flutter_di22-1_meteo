@@ -22,7 +22,16 @@ class _HomePageState extends State<HomePage> {
         title: Text("Météo"),
       ),
       body: Column(
-        children: [],
+        children: [
+          FilledButton(
+              onPressed: () async{
+                print(villes);
+                await ajouter("Lyon", -100, 100);
+                print(villes);
+              },
+              child: Text("Ajouter une ville")
+          )
+        ],
       ),
     );
   }
