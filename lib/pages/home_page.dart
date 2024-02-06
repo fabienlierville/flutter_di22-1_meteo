@@ -30,15 +30,56 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Météo"),
       ),
-      body: Column(
+      drawer: Drawer(
+        child: Container(
+          color: Colors.blue,
+          child: Column(
+            children: [
+              DrawerHeader(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text("Villes", style: TextStyle(fontSize:  30, color: Colors.white),),
+                      ElevatedButton(
+                        onPressed: ajoutVille,
+                        child: Text(
+                          "Ajouter une ville",
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white)),
+                      ),
+                    ],
+                  )
+              ),
+              ListTile(
+                onTap: null,
+                title: Text("Position Inconnue", style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+              ),
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: villes.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        City ville = villes[index];
+                        return ListTile(
+                          onTap: null,
+                          trailing: IconButton(
+                              icon: Icon(Icons.delete, color: Colors.white,),
+                              onPressed: (){
+                                supprimer(ville.name);
+                              }
+                          ),
+
+                          title: Text(ville.name, style: TextStyle(color: Colors.white),textAlign: TextAlign.center,),
+                        );
+                      })),
+            ],
+          ),
+        ),
+      ),
+    body: Column(
         children: [
-          FilledButton(
-              onPressed: () async {
-                print(villes);
-                await supprimer("Rouen");
-                print(villes);
-              },
-              child: Text("Ajouter une ville"))
         ],
       ),
     );
@@ -86,4 +127,37 @@ class _HomePageState extends State<HomePage> {
       await getVilles(); // Récupère + refresh VUE
     }
   }
+
+
+  Future<void> ajoutVille() {
+    String? villeSaisie;
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext contextDialog) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.all(20),
+            title: Text("Ajoutez une ville"),
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                    labelText: "ville", hintText: "saisir ville"),
+                onChanged: (String value) {
+                  villeSaisie = value;
+                },
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if(villeSaisie != null){
+
+                      ajouter(villeSaisie!,-100,100);
+                      Navigator.pop(contextDialog);
+                    }
+                  },
+                  child: Text("Valider")),
+            ],
+          );
+        });
+  }
+
 }
